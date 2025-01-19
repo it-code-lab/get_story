@@ -1,6 +1,6 @@
 import requests
 
-def enhance_story(api_key, story):
+def enhance_story_with_gemini(api_key, story):
     """
     Enhance a story using Gemini API.
 
@@ -11,14 +11,33 @@ def enhance_story(api_key, story):
     Returns:
         str: Enhanced story text.
     """
-    url = "https://gemini.googleapis.com/v1/your-endpoint"  # Replace with actual endpoint
+    url = "https://generativeai.googleapis.com/v1beta1/models/text-bison:generateText"  
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     }
+    # Prepare the payload
     payload = {
-        "input": f"Please Enhance below story and make interesting in around 500 words. Change the name of the characters and storyline if needed to make it original. \n\n{story}"
+        "prompt": (
+            "I have a short kids story. I need you to help me enhance and recreate it for a YouTube video. "
+            f"Here is the story: {story}. \n\n"
+            "**Considering my niche (short stories) and target audience (kids, children, teens, and parents), "
+            "please provide the following:**\n"
+            "1. **Enhanced and recreated story:** A new version of the story with changed character names and storyline "
+            "if needed (to make the story original and avoid any copyrights). The new story should be around 500 words, "
+            "suitable for a YouTube video targeting children and families. \n"
+            "2. **YouTube Title:** A catchy and engaging title for a YouTube video based on the recreated story, appealing to "
+            "both children and parents. \n"
+            "3. **YouTube Description:** A concise and informative description of the YouTube video, including a brief summary "
+            "of the story, highlighting its suitability for families, and encouraging viewers to subscribe and share. \n"
+            "4. **YouTube Tags:** A list of relevant keywords and phrases to help the video rank well on YouTube, considering "
+            "search terms used by parents and children looking for short stories (e.g., 'kids stories', 'bedtime stories', "
+            "'children's books', 'family stories', 'short stories for kids', 'educational stories', 'moral stories')."
+        ),
+        "temperature": 0.7,
+        "max_tokens": 1200
     }
+
     response = requests.post(url, json=payload, headers=headers)
     if response.status_code == 200:
         return response.json().get("output", "No output found")
